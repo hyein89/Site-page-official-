@@ -1,76 +1,99 @@
 // app/page.js
+
 import { decodeData } from '../lib/crypto';
 import config from '../config';
 import { notFound } from 'next/navigation';
 import RedirectTimer from './components/RedirectTimer';
 
-// 1. GENERATE METADATA (Untuk Facebook/WA Preview)
+// --- 1. METADATA GENERATOR (Server Side) ---
 export async function generateMetadata({ searchParams }) {
   const queryCode = searchParams.q;
 
-  // Jika tidak ada q, biarkan default (nanti di-handle logic di bawah)
-  if (!queryCode) return { title: 'Not Found' };
+  // Default metadata if no code is present
+  const defaultMeta = {
+    title: 'Content Not Found',
+    description: 'The link you followed may be broken, or the page may have been removed.',
+  };
+
+  if (!queryCode) return defaultMeta;
 
   const data = decodeData(queryCode);
 
-  // Jika decode gagal
-  if (!data) return { title: 'Error' };
+  // If decoding fails, return default meta
+  if (!data) return defaultMeta;
 
   return {
     title: data.title,
-    description: "Click to see full content.",
+    description: "Click here to watch the full video.", // English description
     openGraph: {
       title: data.title,
-      description: "Click to see full content.",
+      description: "Click here to watch the full video.",
+      siteName: 'Viral Video Update',
       images: [
         {
           url: data.image,
-          width: 1200,
+          // CRITICAL FIX: Hardcode dimensions to force FB to show the image immediately
+          width: 1200, 
           height: 630,
+          alt: data.title,
         },
       ],
       type: 'website',
+      locale: 'en_US', // Set locale to English
     },
   };
 }
 
-// 2. HALAMAN UTAMA
+// --- 2. MAIN PAGE COMPONENT ---
 export default function Page({ searchParams }) {
   const queryCode = searchParams.q;
 
-  // LOGIC: Jika tanpa q=, lempar ke 404
+  // Logic: If no 'q' parameter, go to 404
   if (!queryCode) {
     notFound();
   }
 
   const data = decodeData(queryCode);
 
-  // LOGIC: Jika kode acak tidak valid, lempar ke 404
+  // Logic: If code is invalid/fake, go to 404
   if (!data) {
     notFound();
   }
 
   return (
     <div className="container" style={{ marginTop: '50px' }}>
-      <div className="panel panel-default">
+      <div className="panel panel-default" style={{ boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
         <div className="panel-heading">
-          <h3 className="panel-title">Please Wait</h3>
+          <h3 className="panel-title">
+            <i className="glyphicon glyphicon-lock"></i> Secure Verification
+          </h3>
         </div>
         <div className="panel-body">
-          {/* Tampilkan Gambar Pancingan (Optional, agar user yakin) */}
+          
+          {/* Content Preview */}
           <div className="text-center" style={{ marginBottom: '20px' }}>
-             <img src={data.image} alt="Preview" className="img-thumbnail" style={{ maxHeight: '200px' }} />
-             <h4>{data.title}</h4>
+             <img 
+                src={data.image} 
+                alt="Preview" 
+                className="img-thumbnail" 
+                style={{ maxHeight: '250px', width: 'auto' }} 
+             />
+             <h4 style={{ marginTop: '15px', fontWeight: 'bold' }}>{data.title}</h4>
           </div>
 
           <hr />
 
-          {/* Load Timer Component */}
+          {/* Timer Component */}
+          {/* Note: 'text' prop is passed here to ensure English output */}
           <RedirectTimer 
             offerLink={config.offerLink} 
             delay={config.delayTime} 
-            text={config.loadingText} 
+            text="Please wait, we are redirecting you to the destination..." 
           />
+        </div>
+        
+        <div className="panel-footer text-center text-muted" style={{ fontSize: '12px' }}>
+            &copy; {new Date().getFullYear()} Secure Redirect Service. All rights reserved.
         </div>
       </div>
     </div>
