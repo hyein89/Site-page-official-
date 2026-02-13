@@ -37,10 +37,10 @@ export default function RedirectTimer({ offerLink, delay, text }) {
         </div>
       </div>
       <h3>{text}</h3>
-      <p>Anda akan dialihkan dalam <strong>{count}</strong> detik.</p>
+      <p>You will be redirected in <strong>{count}</strong> second.</p>
       <br/>
       <button className="btn btn-success" onClick={() => window.location.replace(offerLink)}>
-        Buka Sekarang <i className="glyphicon glyphicon-share-alt"></i>
+        Open Now <i className="glyphicon glyphicon-share-alt"></i>
       </button>
     </div>
   );
