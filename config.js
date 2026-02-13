@@ -7,7 +7,7 @@ module.exports = {
   delayTime: 3000,
   
   // Teks yang muncul saat loading
-  loadingText: "Sedang memuat halaman promo...",
+  loadingText: "Page is loading...",
   
   // Nama situs untuk meta tag
   siteName: "News Update Daily"
