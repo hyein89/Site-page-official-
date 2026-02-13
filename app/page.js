@@ -18,10 +18,10 @@ export async function generateMetadata({ searchParams }) {
 
   return {
     title: data.title,
-    description: "Klik untuk melihat konten selengkapnya.",
+    description: "Click to see full content.",
     openGraph: {
       title: data.title,
-      description: "Klik untuk melihat konten selengkapnya.",
+      description: "Click to see full content.",
       images: [
         {
           url: data.image,
